@@ -1,10 +1,9 @@
 # Portafolio de Ciencia de Datos — Angel Acis Delgadillo Ramos
 
 Científico de datos con formación en Matemáticas y especialización en análisis
-estadístico de encuestas de hogares a gran escala. Este repositorio concentra
-25 proyectos aplicados desarrollados con microdatos oficiales del INEGI,
-cubriendo desde estadística descriptiva hasta estimación en áreas pequeñas
-a nivel municipal con datos censales.
+estadístico. Este repositorio concentra 25 proyectos aplicados desarrollados 
+con microdatos oficiales del INEGI, cubriendo desde estadística descriptiva 
+hasta estimación en áreas pequeñas a nivel municipal con datos censales.
 
 Todos los proyectos siguen estándares de reproducibilidad completa, diseño
 muestral correcto y calidad de publicación oficial.
