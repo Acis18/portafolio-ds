@@ -1,0 +1,38 @@
+# Datos pesados — nunca al repositorio
+data/
+*.csv
+*.dbf
+*.xlsx
+*.parquet
+
+# Excepciones: sí queremos algunos archivos pequeños de referencia
+!docs/*.xlsx
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# R
+.Rhistory
+.RData
+.Rproj.user
+*.Rproj
+
+# renv — la librería no se versiona, solo el lockfile
+renv/library/
+renv/local/
+renv/staging/
+renv/.python/
+
+# VSCode
+.vscode/extensions.json
+
+# Outputs grandes
+outputs/*.pdf
+outputs/*.html
+
+# Excepciones de outputs que sí queremos versionar
+!outputs/.gitkeep
+
+# Sistema
+.DS_Store
+Thumbs.db
+__pycache__/

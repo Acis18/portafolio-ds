@@ -1,0 +1,15 @@
+{
+  "r.rpath.linux": "/usr/bin/R",
+  "r.lsp.enabled": true,
+  "r.sessionWatcher": true,
+  "r.bracketedPaste": true,
+  "r.plot.useHttpgd": true,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "files.encoding": "utf8",
+  "editor.rulers": [80],
+  "editor.formatOnSave": false,
+  "[r]": {
+    "editor.defaultFormatter": "REditorSupport.r"
+  }
+}
