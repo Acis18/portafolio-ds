@@ -1,17 +1,17 @@
-# Datos pesados — nunca al repositorio
-data/raw/*
-data/processed/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
+# Extensiones de datos — nunca al repositorio
 *.csv
 *.dbf
 *.xlsx
 *.parquet
 
-# Excepciones: sí queremos algunos archivos pequeños de referencia
-!docs/*.xlsx
+# Carpetas de datos
+data/raw/*
+data/processed/*
+
+# Excepciones de datos
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+!docs/*.xlsx
 
 # R
 .Rhistory
@@ -28,11 +28,9 @@ renv/.python/
 # VSCode
 .vscode/extensions.json
 
-# Outputs grandes
+# Outputs generados
 outputs/*.pdf
 outputs/*.html
-
-# Excepciones de outputs que sí queremos versionar
 !outputs/.gitkeep
 
 # Sistema
