@@ -1,10 +1,10 @@
-# ============================================================
+# ----------------------------------------------------------
 # P02 — Diagnóstico de calidad ENOE 2024-T1
 # Fuente: INEGI, ENOE 2024 T1
 # URL: https://www.inegi.org.mx/programas/enoe/15ymas/
 # Fecha de descarga: 12/05/2026
 # Autor: Angel Acis Delgadillo Ramos
-# ============================================================
+# ---------------------------------------------------------
 
 library(foreign)
 library(janitor)
@@ -12,12 +12,12 @@ library(skimr)
 library(tidyverse)
 library(here)
 
-# ______________LECTURA_______________
+# ----LECTURA----------------------------------------------
 
 enoe <- foreign::read.dbf(here::here("data/raw/ENOE_SDEMT124.dbf"))
-enoe <- janitor:: clean_names(enoe)
+enoe <- janitor::clean_names(enoe)
 
-# _____________DIMENSION Y ESTRUCTURA_______________
+# ----DIMENSION Y ESTRUCTURA-------------------------------
 
 
 cat("Filas:", nrow(enoe), "\n")
@@ -26,20 +26,16 @@ cat("Columnas:", ncol(enoe), "\n")
 stopifnot(nrow(enoe) >= 300000 & nrow(enoe) <= 500000)
 cat("QA Dimensiones: PASADO\n")
 
-#______________COMPLETITUD______________
-
-skimr::skim(enoe)
-
-?skim
+#----COMPLETITUD-------------------------------------------
 
 enoe |>
   skim() |>
   dplyr::filter(n_missing > 0)
 
-#________VARIABLES CLAVE -Rangos y NAs_________
+#----VARIABLES CLAVE -Rangos y NAs-------------------------
 
 #clase1: condicion de actividad primera categoria
-#durades:
+#dur_est: Duracion de estudios
 #ingocup: ingreso mensual de los ocupados
 #"eda": edad de los encuestados
 #sex: sexo de los encuestados
@@ -48,7 +44,6 @@ enoe |>
 #anios_esc: años de escolaridad
 #hrsocup: horas trabajadas
 
-colnames(enoe)
 variables_clave <- c("clase1","dur_est","ingocup","eda","sex","ent","rama",
 "anios_esc","hrsocup")
 
@@ -56,7 +51,7 @@ enoe |>
   dplyr::select(any_of(variables_clave)) |>
   skimr::skim()
 
-#La colmna de edades esta importada como factores, es necesario transformales a numericos
+#La colmuna de edades esta importada como factores, es necesario transformales a numericos
 
 enoe <- enoe |>
   dplyr::mutate(eda = as.numeric(as.character(eda)))
@@ -70,7 +65,7 @@ range(enoe$eda, na.rm = TRUE)
 # El valor 99 en variables demográficas siempre es código de no respuesta, 
 # nunca un valor real.
 
-#____________CONSISTENCIA LOGICA______________
+#----CONSISTENCIA LOGICA-----------------------------------
 # Criterio de consistencia: si eda >= 15 y clase1 == 1 (ocupado), 
 # entonces hrsocup > 0 debe ser verdadero
 
@@ -88,7 +83,7 @@ cat("Porcentaje total:", round(pct_inconsistencias, 3), "%\n")
 # incapacidad, huelga). Tasa dentro del rango esperado (< 5%).
 # No se consideran errores de captura.
 
-#_____________TABLAS DE FRECUENCIA______________
+#----TABLAS DE FRECUENCIA----------------------------------
 
 #Distribucion por sexo
 enoe |> dplyr::count(sex) |> dplyr::mutate(pct = n /sum(n) * 100)
@@ -100,7 +95,7 @@ enoe |> dplyr::count(ent) |> dplyr::arrange(desc(n))
 enoe |> dplyr::count(rama) |> dplyr::arrange(desc(n))
 
 
-#_____________QA FINAL______________
+#----QA FINAL----------------------------------------------
 #Verificacion del numero adecuado de filas.
 stopifnot(nrow(enoe) >= 300000 & nrow(enoe) <= 500000)
 cat("QA filas: PASADO\n")
@@ -114,7 +109,8 @@ cat("QA entidades: PASADO\n")
 stopifnot(sum(is.na(enoe$clase1)) == 0)
 cat("QA ocupaciones sin NA's: PASADO\n")
 
-#Removiendo los 99 que no aportan nada y los NA's
+# Verificar que los valores válidos de anios_esc (excluyendo código 99)
+# no superan 25 años, que es el máximo razonable de escolaridad formal.
 stopifnot(all(enoe$anios_esc[enoe$anios_esc != 99] <= 25, na.rm = TRUE))
 cat("QA anios_esc: PASADO\n")
 
