@@ -9,12 +9,6 @@ website:
     left:
       - href: index.qmd
         text: Inicio
-      - text: "Fase 1 · Fundamentos"
-        menu:
-          - href: practicas/P01_ambiente/P01_ambiente.qmd
-            text: "P01 · Ambiente reproducible"
-          - href: practicas/P02_diagnostico/P02_diagnostico_enoe.qmd
-            text: "P02 · Diagnóstico ENOE"
     right:
       - icon: github
         href: https://github.com/Acis18/portafolio-ds
@@ -22,14 +16,16 @@ website:
   sidebar:
     style: "docked"
     contents:
-      - section: "Fase 1 · Fundamentos"
+      - section: "Configuración"
         contents:
           - practicas/P01_ambiente/P01_ambiente.qmd
+      - section: "Mercado laboral"
+        contents:
           - practicas/P02_diagnostico/P02_diagnostico_enoe.qmd
 
 format:
   html:
-    theme: cyborg
+    theme: litera
     toc: true
     toc-depth: 3
     code-fold: true
