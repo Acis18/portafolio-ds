@@ -5,6 +5,7 @@ project:
 website:
   title: "Portafolio DS — Angel Acis"
   description: "25 proyectos aplicados con microdatos del INEGI"
+  favicon: "Rlogo.png"
   navbar:
     left:
       - href: index.qmd
