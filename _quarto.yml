@@ -1,0 +1,44 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Portafolio DS — Angel Acis"
+  description: "25 proyectos aplicados con microdatos del INEGI"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Inicio
+      - text: "Fase 1 · Fundamentos"
+        menu:
+          - href: practicas/P01_ambiente/P01_ambiente.qmd
+            text: "P01 · Ambiente reproducible"
+          - href: practicas/P02_diagnostico/P02_diagnostico_enoe.qmd
+            text: "P02 · Diagnóstico ENOE"
+    right:
+      - icon: github
+        href: https://github.com/Acis18/portafolio-ds
+
+  sidebar:
+    style: "docked"
+    contents:
+      - section: "Fase 1 · Fundamentos"
+        contents:
+          - practicas/P01_ambiente/P01_ambiente.qmd
+          - practicas/P02_diagnostico/P02_diagnostico_enoe.qmd
+
+format:
+  html:
+    theme: cyborg
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    code-tools: true
+    highlight-style: github
+    lang: es
+
+execute:
+  freeze: auto
+  echo: true
+  warning: false
+  message: false

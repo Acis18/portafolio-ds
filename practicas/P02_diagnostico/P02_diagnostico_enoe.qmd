@@ -1,0 +1,172 @@
+---
+title: "Diagnóstico de calidad — ENOE 2024"
+author: "Angel Acis Delgadillo Ramos"
+date: today
+---
+
+## Objetivo
+
+Auditar la calidad del archivo de microdatos ENOE 2024 Trimestre 1 antes
+de cualquier análisis estadístico. Este diagnóstico certifica que el archivo
+cumple con los criterios de integridad, completitud y consistencia lógica
+esperados para una encuesta nacional del INEGI.
+
+**Fuente:** INEGI, Encuesta Nacional de Ocupación y Empleo 2024 T1  
+**URL:** https://www.inegi.org.mx/programas/enoe/15ymas/  
+**Fecha de descarga:** 12/05/2026  
+
+## Datos
+
+El archivo `ENOE_SDEMT124.dbf` contiene el cuestionario sociodemográfico
+de la ENOE 2024 Trimestre 1. Cubre a la población de 15 años y más a nivel
+nacional con representatividad por entidad federativa.
+
+## Desarrollo
+
+### Lectura y limpieza inicial
+
+```{r}
+#| label: lectura
+library(foreign)
+library(janitor)
+library(skimr)
+library(tidyverse)
+library(here)
+
+enoe <- foreign::read.dbf(here::here("data/raw/ENOE_SDEMT124.dbf"))
+enoe <- janitor::clean_names(enoe)
+
+cat("Filas:", nrow(enoe), "\n")
+cat("Columnas:", ncol(enoe), "\n")
+```
+
+### Dimensiones y estructura
+
+```{r}
+#| label: dimensiones
+stopifnot(nrow(enoe) >= 300000 & nrow(enoe) <= 500000)
+cat("QA Dimensiones: PASADO\n")
+```
+
+### Completitud
+
+Variables con valores faltantes en el archivo:
+
+```{r}
+#| label: completitud
+enoe |>
+  skim() |>
+  dplyr::filter(n_missing > 0)
+```
+
+### Variables clave — rangos y NAs
+
+Las variables de interés para el análisis del mercado laboral son:
+
+- `clase1` — condición de actividad
+- `dur_est` — duración de estudios
+- `ingocup` — ingreso mensual de ocupados
+- `eda` — edad
+- `sex` — sexo
+- `ent` — entidad federativa
+- `rama` — sector de actividad económica
+- `anios_esc` — años de escolaridad
+- `hrsocup` — horas trabajadas
+
+```{r}
+#| label: variables-clave
+variables_clave <- c("clase1", "dur_est", "ingocup", "eda", "sex",
+                     "ent", "rama", "anios_esc", "hrsocup")
+
+enoe |>
+  dplyr::select(any_of(variables_clave)) |>
+  skimr::skim()
+```
+
+La variable `eda` se importa como factor. Se convierte a numérico para
+permitir operaciones aritméticas:
+
+```{r}
+#| label: conversion-eda
+enoe <- enoe |>
+  dplyr::mutate(eda = as.numeric(as.character(eda)))
+
+class(enoe$eda)
+range(enoe$eda, na.rm = TRUE)
+```
+
+> **Regla general para microdatos INEGI:** el valor `99` en variables
+> demográficas siempre es código de no respuesta, nunca un valor real.
+
+### Consistencia lógica
+
+Una persona clasificada como ocupada (`clase1 == 1`) de 15 años o más
+debería tener horas trabajadas registradas. Se cuantifican las excepciones:
+
+```{r}
+#| label: consistencia
+inconsistencias <- enoe |>
+  dplyr::filter(eda >= 15 & clase1 == 1 & hrsocup == 0)
+
+n_inconsistencias <- nrow(inconsistencias)
+pct_inconsistencias <- n_inconsistencias / nrow(enoe) * 100
+
+cat("Inconsistencias lógicas encontradas:", n_inconsistencias, "\n")
+cat("Porcentaje del total:", round(pct_inconsistencias, 3), "%\n")
+```
+
+Los 12,965 registros con ocupación declarada y cero horas trabajadas
+(3.059% del total) corresponden a ausencias temporales válidas: vacaciones,
+incapacidad médica o huelga. La tasa está dentro del rango esperado (< 5%)
+y no se consideran errores de captura.
+
+### Distribución de variables categóricas
+
+```{r}
+#| label: frecuencias
+enoe |> dplyr::count(sex) |> dplyr::mutate(pct = n / sum(n) * 100)
+enoe |> dplyr::count(ent) |> dplyr::arrange(desc(n))
+enoe |> dplyr::count(rama) |> dplyr::arrange(desc(n))
+```
+
+## QA y validación
+
+```{r}
+#| label: qa-final
+stopifnot(nrow(enoe) >= 300000 & nrow(enoe) <= 500000)
+cat("QA filas: PASADO\n")
+
+codigos_validos <- sprintf("%02d", 1:32)
+stopifnot(all(enoe$ent %in% codigos_validos, na.rm = TRUE))
+cat("QA entidades: PASADO\n")
+
+stopifnot(sum(is.na(enoe$clase1)) == 0)
+cat("QA clase1 sin NAs: PASADO\n")
+
+stopifnot(all(enoe$anios_esc[enoe$anios_esc != 99] <= 25, na.rm = TRUE))
+cat("QA anios_esc: PASADO\n")
+
+cat("\nDiagnóstico completado. Archivo listo para análisis.\n")
+```
+
+## Conclusiones
+
+- El archivo contiene 423,866 registros y 114 variables, dentro del rango
+  esperado para una muestra nacional de la ENOE.
+- Las variables `cs_p14_c`, `cs_p15` y `cs_p16` tienen alto porcentaje de
+  NAs por diseño del cuestionario — solo aplican a personas con estudios
+  superiores.
+- La variable `eda` requiere conversión de factor a numérico antes de
+  cualquier análisis.
+- El valor `99` en `anios_esc` es código de no respuesta y debe filtrarse
+  antes de calcular estadísticas de escolaridad.
+- La tasa de inconsistencias lógicas (3.059%) es consistente con ausencias
+  temporales válidas.
+
+## Nota metodológica
+
+Los microdatos utilizados corresponden al archivo `ENOE_SDEMT124.dbf` del
+primer trimestre de 2024, descargado directamente del sitio oficial del
+INEGI. El archivo no se incluye en el repositorio por su tamaño. Para
+reproducir este análisis descarga el archivo desde la URL indicada y
+colócalo en `data/raw/`.

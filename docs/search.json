@@ -1,0 +1,212 @@
+[
+  {
+    "objectID": "practicas/P02_diagnostico/P02_diagnostico_enoe.html",
+    "href": "practicas/P02_diagnostico/P02_diagnostico_enoe.html",
+    "title": "Diagnóstico de calidad — ENOE 2024",
+    "section": "",
+    "text": "Auditar la calidad del archivo de microdatos ENOE 2024 Trimestre 1 antes de cualquier análisis estadístico. Este diagnóstico certifica que el archivo cumple con los criterios de integridad, completitud y consistencia lógica esperados para una encuesta nacional del INEGI.\nFuente: INEGI, Encuesta Nacional de Ocupación y Empleo 2024 T1\nURL: https://www.inegi.org.mx/programas/enoe/15ymas/\nFecha de descarga: 12/05/2026",
+    "crumbs": [
+      "Inicio",
+      "Fase 1 · Fundamentos",
+      "Diagnóstico de calidad — ENOE 2024"
+    ]
+  },
+  {
+    "objectID": "practicas/P02_diagnostico/P02_diagnostico_enoe.html#objetivo",
+    "href": "practicas/P02_diagnostico/P02_diagnostico_enoe.html#objetivo",
+    "title": "Diagnóstico de calidad — ENOE 2024",
+    "section": "",
+    "text": "Auditar la calidad del archivo de microdatos ENOE 2024 Trimestre 1 antes de cualquier análisis estadístico. Este diagnóstico certifica que el archivo cumple con los criterios de integridad, completitud y consistencia lógica esperados para una encuesta nacional del INEGI.\nFuente: INEGI, Encuesta Nacional de Ocupación y Empleo 2024 T1\nURL: https://www.inegi.org.mx/programas/enoe/15ymas/\nFecha de descarga: 12/05/2026",
+    "crumbs": [
+      "Inicio",
+      "Fase 1 · Fundamentos",
+      "Diagnóstico de calidad — ENOE 2024"
+    ]
+  },
+  {
+    "objectID": "practicas/P02_diagnostico/P02_diagnostico_enoe.html#datos",
+    "href": "practicas/P02_diagnostico/P02_diagnostico_enoe.html#datos",
+    "title": "Diagnóstico de calidad — ENOE 2024",
+    "section": "Datos",
+    "text": "Datos\nEl archivo ENOE_SDEMT124.dbf contiene el cuestionario sociodemográfico de la ENOE 2024 Trimestre 1. Cubre a la población de 15 años y más a nivel nacional con representatividad por entidad federativa.",
+    "crumbs": [
+      "Inicio",
+      "Fase 1 · Fundamentos",
+      "Diagnóstico de calidad — ENOE 2024"
+    ]
+  },
+  {
+    "objectID": "practicas/P02_diagnostico/P02_diagnostico_enoe.html#desarrollo",
+    "href": "practicas/P02_diagnostico/P02_diagnostico_enoe.html#desarrollo",
+    "title": "Diagnóstico de calidad — ENOE 2024",
+    "section": "Desarrollo",
+    "text": "Desarrollo\n\nLectura y limpieza inicial\n\n\nCódigo\nlibrary(foreign)\nlibrary(janitor)\nlibrary(skimr)\nlibrary(tidyverse)\nlibrary(here)\n\nenoe &lt;- foreign::read.dbf(here::here(\"data/raw/ENOE_SDEMT124.dbf\"))\nenoe &lt;- janitor::clean_names(enoe)\n\ncat(\"Filas:\", nrow(enoe), \"\\n\")\n\n\nFilas: 423866 \n\n\nCódigo\ncat(\"Columnas:\", ncol(enoe), \"\\n\")\n\n\nColumnas: 114 \n\n\n\n\nDimensiones y estructura\n\n\nCódigo\nstopifnot(nrow(enoe) &gt;= 300000 & nrow(enoe) &lt;= 500000)\ncat(\"QA Dimensiones: PASADO\\n\")\n\n\nQA Dimensiones: PASADO\n\n\n\n\nCompletitud\nVariables con valores faltantes en el archivo:\n\n\nCódigo\nenoe |&gt;\n  skim() |&gt;\n  dplyr::filter(n_missing &gt; 0)\n\n\n\nData summary\n\n\nName\nenoe\n\n\nNumber of rows\n423866\n\n\nNumber of columns\n114\n\n\n_______________________\n\n\n\nColumn type frequency:\n\n\n\nfactor\n31\n\n\n________________________\n\n\n\nGroup variables\nNone\n\n\n\nVariable type: factor\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nordered\nn_unique\ntop_counts\n\n\n\n\nloc\n423866\n0.00\nFALSE\n0\n:\n\n\nmun\n2851\n0.99\nFALSE\n213\n002: 21576, 001: 20309, 005: 19274, 004: 18955\n\n\nest_d_men\n19595\n0.95\nFALSE\n430\n008: 3139, 000: 2886, 001: 2846, 004: 2740\n\n\nt_loc_men\n19595\n0.95\nFALSE\n4\n1: 230625, 4: 68117, 3: 52858, 2: 52671\n\n\npar_c\n7651\n0.98\nFALSE\n37\n301: 152042, 101: 125370, 201: 69082, 408: 31212\n\n\nsex\n7651\n0.98\nFALSE\n2\n2: 217508, 1: 198707\n\n\neda\n7651\n0.98\nFALSE\n100\n23: 7391, 15: 7312, 18: 7119, 13: 7086\n\n\nnac_dia\n7651\n0.98\nFALSE\n32\n99: 35324, 15: 13923, 10: 13855, 20: 13334\n\n\nnac_mes\n7651\n0.98\nFALSE\n13\n08: 34871, 09: 34507, 10: 34081, 12: 32953\n\n\nnac_anio\n7651\n0.98\nFALSE\n112\n200: 7376, 200: 7340, 200: 7198, 201: 7026\n\n\nl_nac_c\n7651\n0.98\nFALSE\n96\n030: 22540, 007: 20738, 009: 18137, 011: 16603\n\n\ncs_p12\n30641\n0.93\nFALSE\n3\n1: 370130, 2: 23034, 9: 61\n\n\ncs_p13_1\n30641\n0.93\nFALSE\n11\n02: 101442, 03: 98259, 04: 75047, 07: 70954\n\n\ncs_p13_2\n30641\n0.93\nFALSE\n10\n3: 169995, 2: 52415, 6: 48179, 5: 36959\n\n\ncs_p14_c\n333685\n0.21\nFALSE\n171\n041: 7757, 033: 6563, 042: 6121, 092: 4187\n\n\ncs_p15\n340034\n0.20\nFALSE\n4\n3: 72939, 2: 9958, 1: 899, 9: 36\n\n\ncs_p16\n333685\n0.21\nFALSE\n3\n1: 69704, 2: 20284, 9: 193\n\n\ncs_p17\n30641\n0.93\nFALSE\n3\n2: 286443, 1: 106776, 9: 6\n\n\nn_hij\n239715\n0.43\nFALSE\n27\n00: 59803, 02: 37689, 03: 31283, 01: 23394\n\n\ne_con\n75885\n0.82\nFALSE\n7\n6: 129654, 5: 120268, 1: 55946, 4: 19378\n\n\ncs_p20a_1\n11163\n0.97\nFALSE\n4\n1: 410203, 2: 2103, 4: 245, 3: 152\n\n\ncs_p20a_c\n11163\n0.97\nFALSE\n64\n007: 19261, 030: 17713, 015: 16889, 005: 16326\n\n\ncs_p20b_1\n11560\n0.97\nFALSE\n2\n1: 408725, 2: 3581\n\n\ncs_p20b_c\n11163\n0.97\nFALSE\n266\n002: 20924, 001: 19695, 005: 18756, 004: 18518\n\n\ncs_p20c_1\n419888\n0.01\nFALSE\n11\n03: 1826, 01: 727, 11: 478, 02: 339\n\n\ncs_ad_mot\n416215\n0.02\nFALSE\n11\n06: 1977, 10: 1387, 01: 1298, 03: 858\n\n\ncs_p21_des\n422479\n0.00\nFALSE\n414\nCAM: 264, SE : 243, IND: 50, CAM: 33\n\n\ncs_ad_des\n417441\n0.02\nFALSE\n4\n1: 4900, 2: 1125, 3: 329, 9: 71\n\n\ncs_nr_mot\n418538\n0.01\nFALSE\n11\n06: 2056, 09: 1435, 08: 522, 03: 438\n\n\ncs_p23_des\n423611\n0.00\nFALSE\n176\nCAM: 14, NO : 5, PRO: 5, DIC: 4\n\n\ncs_nr_ori\n420495\n0.01\nFALSE\n4\n1: 2720, 2: 515, 3: 132, 9: 4\n\n\n\n\n\n\n\nVariables clave — rangos y NAs\nLas variables de interés para el análisis del mercado laboral son:\n\nclase1 — condición de actividad\ndur_est — duración de estudios\ningocup — ingreso mensual de ocupados\neda — edad\nsex — sexo\nent — entidad federativa\nrama — sector de actividad económica\nanios_esc — años de escolaridad\nhrsocup — horas trabajadas\n\n\n\nCódigo\nvariables_clave &lt;- c(\"clase1\", \"dur_est\", \"ingocup\", \"eda\", \"sex\",\n                     \"ent\", \"rama\", \"anios_esc\", \"hrsocup\")\n\nenoe |&gt;\n  dplyr::select(any_of(variables_clave)) |&gt;\n  skimr::skim()\n\n\n\nData summary\n\n\nName\ndplyr::select(enoe, any_o…\n\n\nNumber of rows\n423866\n\n\nNumber of columns\n9\n\n\n_______________________\n\n\n\nColumn type frequency:\n\n\n\nfactor\n3\n\n\nnumeric\n6\n\n\n________________________\n\n\n\nGroup variables\nNone\n\n\n\nVariable type: factor\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nordered\nn_unique\ntop_counts\n\n\n\n\neda\n7651\n0.98\nFALSE\n100\n23: 7391, 15: 7312, 18: 7119, 13: 7086\n\n\nsex\n7651\n0.98\nFALSE\n2\n2: 217508, 1: 198707\n\n\nent\n0\n1.00\nFALSE\n32\n07: 20004, 30: 18050, 15: 17143, 05: 16769\n\n\n\nVariable type: numeric\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nmean\nsd\np0\np25\np50\np75\np100\nhist\n\n\n\n\nclase1\n0\n1\n1.17\n0.71\n0\n1\n1\n2\n2\n▃▁▇▁▆\n\n\ndur_est\n0\n1\n1.78\n2.05\n0\n0\n0\n4\n6\n▇▁▁▃▂\n\n\ningocup\n0\n1\n3068.30\n6544.45\n0\n0\n0\n4800\n215000\n▇▁▁▁▁\n\n\nrama\n0\n1\n1.57\n1.91\n0\n0\n0\n4\n7\n▇▁▅▁▁\n\n\nanios_esc\n0\n1\n8.35\n6.46\n0\n4\n9\n12\n99\n▇▁▁▁▁\n\n\nhrsocup\n0\n1\n18.63\n23.67\n0\n0\n0\n40\n168\n▇▃▁▁▁\n\n\n\n\n\nLa variable eda se importa como factor. Se convierte a numérico para permitir operaciones aritméticas:\n\n\nCódigo\nenoe &lt;- enoe |&gt;\n  dplyr::mutate(eda = as.numeric(as.character(eda)))\n\nclass(enoe$eda)\n\n\n[1] \"numeric\"\n\n\nCódigo\nrange(enoe$eda, na.rm = TRUE)\n\n\n[1]  0 99\n\n\n\nRegla general para microdatos INEGI: el valor 99 en variables demográficas siempre es código de no respuesta, nunca un valor real.\n\n\n\nConsistencia lógica\nUna persona clasificada como ocupada (clase1 == 1) de 15 años o más debería tener horas trabajadas registradas. Se cuantifican las excepciones:\n\n\nCódigo\ninconsistencias &lt;- enoe |&gt;\n  dplyr::filter(eda &gt;= 15 & clase1 == 1 & hrsocup == 0)\n\nn_inconsistencias &lt;- nrow(inconsistencias)\npct_inconsistencias &lt;- n_inconsistencias / nrow(enoe) * 100\n\ncat(\"Inconsistencias lógicas encontradas:\", n_inconsistencias, \"\\n\")\n\n\nInconsistencias lógicas encontradas: 12965 \n\n\nCódigo\ncat(\"Porcentaje del total:\", round(pct_inconsistencias, 3), \"%\\n\")\n\n\nPorcentaje del total: 3.059 %\n\n\nLos 12,965 registros con ocupación declarada y cero horas trabajadas (3.059% del total) corresponden a ausencias temporales válidas: vacaciones, incapacidad médica o huelga. La tasa está dentro del rango esperado (&lt; 5%) y no se consideran errores de captura.\n\n\nDistribución de variables categóricas\n\n\nCódigo\nenoe |&gt; dplyr::count(sex) |&gt; dplyr::mutate(pct = n / sum(n) * 100)\n\n\n   sex      n       pct\n1    1 198707 46.879674\n2    2 217508 51.315274\n3 &lt;NA&gt;   7651  1.805052\n\n\nCódigo\nenoe |&gt; dplyr::count(ent) |&gt; dplyr::arrange(desc(n))\n\n\n   ent     n\n1   07 20004\n2   30 18050\n3   15 17143\n4   05 16769\n5   11 16436\n6   04 15878\n7   02 15815\n8   28 15632\n9   08 15490\n10  21 14886\n11  20 14027\n12  14 13691\n13  10 13562\n14  19 13438\n15  01 12581\n16  24 12520\n17  29 12494\n18  12 12346\n19  18 12253\n20  16 12085\n21  27 11860\n22  25 11819\n23  32 11666\n24  31 11610\n25  22 11540\n26  26 11076\n27  17 10554\n28  13 10511\n29  23 10318\n30  06 10069\n31  09  9389\n32  03  8354\n\n\nCódigo\nenoe |&gt; dplyr::count(rama) |&gt; dplyr::arrange(desc(n))\n\n\n  rama      n\n1    0 229605\n2    4  90204\n3    3  37822\n4    2  31905\n5    1  15626\n6    6  15584\n7    5   1862\n8    7   1258",
+    "crumbs": [
+      "Inicio",
+      "Fase 1 · Fundamentos",
+      "Diagnóstico de calidad — ENOE 2024"
+    ]
+  },
+  {
+    "objectID": "practicas/P02_diagnostico/P02_diagnostico_enoe.html#qa-y-validación",
+    "href": "practicas/P02_diagnostico/P02_diagnostico_enoe.html#qa-y-validación",
+    "title": "Diagnóstico de calidad — ENOE 2024",
+    "section": "QA y validación",
+    "text": "QA y validación\n\n\nCódigo\nstopifnot(nrow(enoe) &gt;= 300000 & nrow(enoe) &lt;= 500000)\ncat(\"QA filas: PASADO\\n\")\n\n\nQA filas: PASADO\n\n\nCódigo\ncodigos_validos &lt;- sprintf(\"%02d\", 1:32)\nstopifnot(all(enoe$ent %in% codigos_validos, na.rm = TRUE))\ncat(\"QA entidades: PASADO\\n\")\n\n\nQA entidades: PASADO\n\n\nCódigo\nstopifnot(sum(is.na(enoe$clase1)) == 0)\ncat(\"QA clase1 sin NAs: PASADO\\n\")\n\n\nQA clase1 sin NAs: PASADO\n\n\nCódigo\nstopifnot(all(enoe$anios_esc[enoe$anios_esc != 99] &lt;= 25, na.rm = TRUE))\ncat(\"QA anios_esc: PASADO\\n\")\n\n\nQA anios_esc: PASADO\n\n\nCódigo\ncat(\"\\nDiagnóstico completado. Archivo listo para análisis.\\n\")\n\n\n\nDiagnóstico completado. Archivo listo para análisis.",
+    "crumbs": [
+      "Inicio",
+      "Fase 1 · Fundamentos",
+      "Diagnóstico de calidad — ENOE 2024"
+    ]
+  },
+  {
+    "objectID": "practicas/P02_diagnostico/P02_diagnostico_enoe.html#conclusiones",
+    "href": "practicas/P02_diagnostico/P02_diagnostico_enoe.html#conclusiones",
+    "title": "Diagnóstico de calidad — ENOE 2024",
+    "section": "Conclusiones",
+    "text": "Conclusiones\n\nEl archivo contiene 423,866 registros y 114 variables, dentro del rango esperado para una muestra nacional de la ENOE.\nLas variables cs_p14_c, cs_p15 y cs_p16 tienen alto porcentaje de NAs por diseño del cuestionario — solo aplican a personas con estudios superiores.\nLa variable eda requiere conversión de factor a numérico antes de cualquier análisis.\nEl valor 99 en anios_esc es código de no respuesta y debe filtrarse antes de calcular estadísticas de escolaridad.\nLa tasa de inconsistencias lógicas (3.059%) es consistente con ausencias temporales válidas.",
+    "crumbs": [
+      "Inicio",
+      "Fase 1 · Fundamentos",
+      "Diagnóstico de calidad — ENOE 2024"
+    ]
+  },
+  {
+    "objectID": "practicas/P02_diagnostico/P02_diagnostico_enoe.html#nota-metodológica",
+    "href": "practicas/P02_diagnostico/P02_diagnostico_enoe.html#nota-metodológica",
+    "title": "Diagnóstico de calidad — ENOE 2024",
+    "section": "Nota metodológica",
+    "text": "Nota metodológica\nLos microdatos utilizados corresponden al archivo ENOE_SDEMT124.dbf del primer trimestre de 2024, descargado directamente del sitio oficial del INEGI. El archivo no se incluye en el repositorio por su tamaño. Para reproducir este análisis descarga el archivo desde la URL indicada y colócalo en data/raw/.",
+    "crumbs": [
+      "Inicio",
+      "Fase 1 · Fundamentos",
+      "Diagnóstico de calidad — ENOE 2024"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Portafolio de Ciencia de Datos",
+    "section": "",
+    "text": "Científico de datos con formación en Matemáticas y especialización en análisis estadístico de encuestas de hogares a gran escala. Este portafolio concentra 25 proyectos aplicados desarrollados con microdatos oficiales del INEGI, cubriendo desde estadística descriptiva hasta estimación en áreas pequeñas a nivel municipal con datos censales.\nTodos los proyectos siguen estándares de reproducibilidad completa, diseño muestral correcto y calidad de publicación oficial."
+  },
+  {
+    "objectID": "index.html#sobre-este-portafolio",
+    "href": "index.html#sobre-este-portafolio",
+    "title": "Portafolio de Ciencia de Datos",
+    "section": "",
+    "text": "Científico de datos con formación en Matemáticas y especialización en análisis estadístico de encuestas de hogares a gran escala. Este portafolio concentra 25 proyectos aplicados desarrollados con microdatos oficiales del INEGI, cubriendo desde estadística descriptiva hasta estimación en áreas pequeñas a nivel municipal con datos censales.\nTodos los proyectos siguen estándares de reproducibilidad completa, diseño muestral correcto y calidad de publicación oficial."
+  },
+  {
+    "objectID": "index.html#proyectos-destacados",
+    "href": "index.html#proyectos-destacados",
+    "title": "Portafolio de Ciencia de Datos",
+    "section": "Proyectos destacados",
+    "text": "Proyectos destacados\n\nEstimación de pobreza a nivel municipal combinando el Censo 2020 y la ENIGH 2022 mediante modelos de área pequeña (Fay-Herriot) y XGBoost\nDashboard interactivo del mercado laboral mexicano con datos ENOE, desplegado públicamente en Shiny\nPaquete R documentado {inegitools} con funciones para procesamiento reproducible de encuestas INEGI\nModelos predictivos de pobreza de ingresos y percepción de inseguridad con Random Forest y XGBoost sobre microdatos ENIGH y ENVIPE\nAnálisis de panel longitudinal del efecto del salario mínimo sobre la informalidad laboral en México 2023–2024"
+  },
+  {
+    "objectID": "index.html#proyectos",
+    "href": "index.html#proyectos",
+    "title": "Portafolio de Ciencia de Datos",
+    "section": "Proyectos",
+    "text": "Proyectos\n\nMercado laboral\nAnálisis del mercado laboral mexicano usando microdatos de la ENOE 2023–2024. Cubre estadística descriptiva, inferencia bajo diseño muestral complejo, modelos de regresión y series de tiempo.\n\nDiagnóstico de calidad — ENOE 2024\nPerfil del mercado laboral mexicano 2024\n\n\n\nPobreza y bienestar\nEstimación de indicadores de bienestar económico con microdatos de la ENIGH y el Censo 2020. Incluye el proyecto de estimación en áreas pequeñas a nivel municipal.\n\n\nSeguridad pública\nAnálisis de percepción de inseguridad con microdatos de la ENVIPE 2023. Modelos predictivos con XGBoost e interpretabilidad con valores SHAP.\n\n\nModelos predictivos\nPipelines completos de machine learning con tidymodels sobre microdatos del INEGI. Random Forest, XGBoost, series de tiempo y validación rigurosa."
+  },
+  {
+    "objectID": "index.html#stack-tecnológico",
+    "href": "index.html#stack-tecnológico",
+    "title": "Portafolio de Ciencia de Datos",
+    "section": "Stack tecnológico",
+    "text": "Stack tecnológico\n\nLenguaje: R 4.6+\nDiseño muestral: survey, srvyr\nMachine learning: tidymodels, xgboost, ranger\nSeries de tiempo: fable, tsibble\nVisualización: ggplot2, leaflet, Shiny\nReportes: Quarto, gt, kableExtra\nReproducibilidad: renv, here, testthat\nControl de versiones: Git + GitHub Actions"
+  },
+  {
+    "objectID": "index.html#contacto",
+    "href": "index.html#contacto",
+    "title": "Portafolio de Ciencia de Datos",
+    "section": "Contacto",
+    "text": "Contacto\n\nEmail: adelgadillo747@gmail.com\nGitHub: Acis18"
+  },
+  {
+    "objectID": "practicas/P01_ambiente/P01_ambiente.html",
+    "href": "practicas/P01_ambiente/P01_ambiente.html",
+    "title": "Ambiente de trabajo reproducible",
+    "section": "",
+    "text": "Configurar un entorno de trabajo reproducible que garantice que cualquier análisis de este portafolio pueda ser replicado exactamente en cualquier máquina, independientemente del sistema operativo o las versiones de paquetes instaladas globalmente.",
+    "crumbs": [
+      "Inicio",
+      "Fase 1 · Fundamentos",
+      "Ambiente de trabajo reproducible"
+    ]
+  },
+  {
+    "objectID": "practicas/P01_ambiente/P01_ambiente.html#objetivo",
+    "href": "practicas/P01_ambiente/P01_ambiente.html#objetivo",
+    "title": "Ambiente de trabajo reproducible",
+    "section": "",
+    "text": "Configurar un entorno de trabajo reproducible que garantice que cualquier análisis de este portafolio pueda ser replicado exactamente en cualquier máquina, independientemente del sistema operativo o las versiones de paquetes instaladas globalmente.",
+    "crumbs": [
+      "Inicio",
+      "Fase 1 · Fundamentos",
+      "Ambiente de trabajo reproducible"
+    ]
+  },
+  {
+    "objectID": "practicas/P01_ambiente/P01_ambiente.html#stack-tecnológico",
+    "href": "practicas/P01_ambiente/P01_ambiente.html#stack-tecnológico",
+    "title": "Ambiente de trabajo reproducible",
+    "section": "Stack tecnológico",
+    "text": "Stack tecnológico\n\n\n\nHerramienta\nVersión\nFunción\n\n\n\n\nR\n4.6.0\nLenguaje principal de análisis\n\n\nQuarto\n1.9.36\nSistema de publicación de reportes\n\n\nrenv\n1.2.2\nControl de dependencias de R\n\n\nGit\n—\nControl de versiones\n\n\nVSCode\n—\nEditor de código",
+    "crumbs": [
+      "Inicio",
+      "Fase 1 · Fundamentos",
+      "Ambiente de trabajo reproducible"
+    ]
+  },
+  {
+    "objectID": "practicas/P01_ambiente/P01_ambiente.html#estructura-del-repositorio",
+    "href": "practicas/P01_ambiente/P01_ambiente.html#estructura-del-repositorio",
+    "title": "Ambiente de trabajo reproducible",
+    "section": "Estructura del repositorio",
+    "text": "Estructura del repositorio\nportafolio-ds/\n├── _quarto.yml          # Configuración del sitio\n├── index.qmd            # Página de inicio\n├── R/                   # Funciones compartidas entre proyectos\n├── practicas/           # Proyectos individuales\n├── data/\n│   ├── raw/             # Microdatos originales (excluidos del repo)\n│   └── processed/       # Datos procesados intermedios\n├── docs/                # Sitio renderizado por Quarto\n├── tests/               # Tests unitarios\n└── renv.lock            # Registro exacto de dependencias",
+    "crumbs": [
+      "Inicio",
+      "Fase 1 · Fundamentos",
+      "Ambiente de trabajo reproducible"
+    ]
+  },
+  {
+    "objectID": "practicas/P01_ambiente/P01_ambiente.html#control-de-dependencias-con-renv",
+    "href": "practicas/P01_ambiente/P01_ambiente.html#control-de-dependencias-con-renv",
+    "title": "Ambiente de trabajo reproducible",
+    "section": "Control de dependencias con renv",
+    "text": "Control de dependencias con renv\nEste proyecto usa {renv} para aislar las dependencias del análisis de la librería global del sistema. El archivo renv.lock registra la versión exacta de cada paquete utilizado.\nPara reproducir el entorno en una máquina nueva:\n# Clonar el repositorio y ejecutar desde la raíz del proyecto\nrenv::restore()",
+    "crumbs": [
+      "Inicio",
+      "Fase 1 · Fundamentos",
+      "Ambiente de trabajo reproducible"
+    ]
+  },
+  {
+    "objectID": "practicas/P01_ambiente/P01_ambiente.html#decisiones-de-arquitectura",
+    "href": "practicas/P01_ambiente/P01_ambiente.html#decisiones-de-arquitectura",
+    "title": "Ambiente de trabajo reproducible",
+    "section": "Decisiones de arquitectura",
+    "text": "Decisiones de arquitectura\nhere::here() sobre rutas absolutas\nTodas las rutas de archivo se construyen con here::here(), que ancla automáticamente la raíz del proyecto al directorio que contiene .git o .here. Esto garantiza que el código funciona sin modificación en cualquier máquina independientemente de la estructura de directorios del usuario.\nUn repositorio para todos los proyectos\nTodos los proyectos del portafolio viven en un único repositorio. Esto permite reutilizar funciones entre proyectos, mantener un único renv.lock y presentar el portafolio como un producto cohesionado.",
+    "crumbs": [
+      "Inicio",
+      "Fase 1 · Fundamentos",
+      "Ambiente de trabajo reproducible"
+    ]
+  },
+  {
+    "objectID": "practicas/P01_ambiente/P01_ambiente.html#convenciones-de-git",
+    "href": "practicas/P01_ambiente/P01_ambiente.html#convenciones-de-git",
+    "title": "Ambiente de trabajo reproducible",
+    "section": "Convenciones de Git",
+    "text": "Convenciones de Git\nLos mensajes de commit siguen el estándar de commits semánticos:\n\n\n\nTipo\nUso\n\n\n\n\nfeat\nNueva práctica o funcionalidad\n\n\nfix\nCorrección de errores\n\n\ndocs\nCambios en documentación\n\n\nchore\nMantenimiento del proyecto\n\n\nrefactor\nMejoras de código sin cambio de lógica\n\n\n\nCada proyecto se desarrolla en su propia rama y se integra a main mediante merge al completarse.",
+    "crumbs": [
+      "Inicio",
+      "Fase 1 · Fundamentos",
+      "Ambiente de trabajo reproducible"
+    ]
+  }
+]

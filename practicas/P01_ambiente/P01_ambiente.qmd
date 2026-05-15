@@ -1,0 +1,81 @@
+---
+title: "Ambiente de trabajo reproducible"
+author: "Angel Acis Delgadillo Ramos"
+date: today
+---
+
+## Objetivo
+
+Configurar un entorno de trabajo reproducible que garantice que cualquier
+análisis de este portafolio pueda ser replicado exactamente en cualquier
+máquina, independientemente del sistema operativo o las versiones de paquetes
+instaladas globalmente.
+
+## Stack tecnológico
+
+| Herramienta | Versión | Función |
+|-------------|---------|---------|
+| R | 4.6.0 | Lenguaje principal de análisis |
+| Quarto | 1.9.36 | Sistema de publicación de reportes |
+| renv | 1.2.2 | Control de dependencias de R |
+| Git | — | Control de versiones |
+| VSCode | — | Editor de código |
+
+## Estructura del repositorio
+
+```
+portafolio-ds/
+├── _quarto.yml          # Configuración del sitio
+├── index.qmd            # Página de inicio
+├── R/                   # Funciones compartidas entre proyectos
+├── practicas/           # Proyectos individuales
+├── data/
+│   ├── raw/             # Microdatos originales (excluidos del repo)
+│   └── processed/       # Datos procesados intermedios
+├── docs/                # Sitio renderizado por Quarto
+├── tests/               # Tests unitarios
+└── renv.lock            # Registro exacto de dependencias
+```
+
+## Control de dependencias con renv
+
+Este proyecto usa `{renv}` para aislar las dependencias del análisis de
+la librería global del sistema. El archivo `renv.lock` registra la versión
+exacta de cada paquete utilizado.
+
+Para reproducir el entorno en una máquina nueva:
+
+```r
+# Clonar el repositorio y ejecutar desde la raíz del proyecto
+renv::restore()
+```
+
+## Decisiones de arquitectura
+
+**`here::here()` sobre rutas absolutas**
+
+Todas las rutas de archivo se construyen con `here::here()`, que ancla
+automáticamente la raíz del proyecto al directorio que contiene `.git` o
+`.here`. Esto garantiza que el código funciona sin modificación en cualquier
+máquina independientemente de la estructura de directorios del usuario.
+
+**Un repositorio para todos los proyectos**
+
+Todos los proyectos del portafolio viven en un único repositorio. Esto
+permite reutilizar funciones entre proyectos, mantener un único `renv.lock`
+y presentar el portafolio como un producto cohesionado.
+
+## Convenciones de Git
+
+Los mensajes de commit siguen el estándar de commits semánticos:
+
+| Tipo | Uso |
+|------|-----|
+| `feat` | Nueva práctica o funcionalidad |
+| `fix` | Corrección de errores |
+| `docs` | Cambios en documentación |
+| `chore` | Mantenimiento del proyecto |
+| `refactor` | Mejoras de código sin cambio de lógica |
+
+Cada proyecto se desarrolla en su propia rama y se integra a `main`
+mediante merge al completarse.

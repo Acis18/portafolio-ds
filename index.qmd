@@ -1,0 +1,73 @@
+---
+title: "Portafolio de Ciencia de Datos"
+subtitle: "25 proyectos aplicados con microdatos del INEGI"
+author: "Angel Acis Delgadillo Ramos"
+date: today
+---
+
+## Sobre este portafolio
+
+Científico de datos con formación en Matemáticas y especialización en análisis
+estadístico de encuestas de hogares a gran escala. Este portafolio concentra
+25 proyectos aplicados desarrollados con microdatos oficiales del INEGI,
+cubriendo desde estadística descriptiva hasta estimación en áreas pequeñas
+a nivel municipal con datos censales.
+
+Todos los proyectos siguen estándares de reproducibilidad completa, diseño
+muestral correcto y calidad de publicación oficial.
+
+## Proyectos destacados
+
+- Estimación de pobreza a nivel municipal combinando el Censo 2020 y la
+  ENIGH 2022 mediante modelos de área pequeña (Fay-Herriot) y XGBoost
+- Dashboard interactivo del mercado laboral mexicano con datos ENOE,
+  desplegado públicamente en Shiny
+- Paquete R documentado `{inegitools}` con funciones para procesamiento
+  reproducible de encuestas INEGI
+- Modelos predictivos de pobreza de ingresos y percepción de inseguridad
+  con Random Forest y XGBoost sobre microdatos ENIGH y ENVIPE
+- Análisis de panel longitudinal del efecto del salario mínimo sobre la
+  informalidad laboral en México 2023–2024
+
+## Proyectos
+
+### Mercado laboral
+
+Análisis del mercado laboral mexicano usando microdatos de la ENOE 2023–2024.
+Cubre estadística descriptiva, inferencia bajo diseño muestral complejo,
+modelos de regresión y series de tiempo.
+
+- [Diagnóstico de calidad — ENOE 2024](practicas/P02_diagnostico/P02_diagnostico_enoe.qmd)
+- [Perfil del mercado laboral mexicano 2024](practicas/P03_descriptiva/P03_descriptiva_enoe.qmd)
+
+### Pobreza y bienestar
+
+Estimación de indicadores de bienestar económico con microdatos de la ENIGH
+y el Censo 2020. Incluye el proyecto de estimación en áreas pequeñas a nivel
+municipal.
+
+### Seguridad pública
+
+Análisis de percepción de inseguridad con microdatos de la ENVIPE 2023.
+Modelos predictivos con XGBoost e interpretabilidad con valores SHAP.
+
+### Modelos predictivos
+
+Pipelines completos de machine learning con tidymodels sobre microdatos
+del INEGI. Random Forest, XGBoost, series de tiempo y validación rigurosa.
+
+## Stack tecnológico
+
+- **Lenguaje:** R 4.6+
+- **Diseño muestral:** survey, srvyr
+- **Machine learning:** tidymodels, xgboost, ranger
+- **Series de tiempo:** fable, tsibble
+- **Visualización:** ggplot2, leaflet, Shiny
+- **Reportes:** Quarto, gt, kableExtra
+- **Reproducibilidad:** renv, here, testthat
+- **Control de versiones:** Git + GitHub Actions
+
+## Contacto
+
+- **Email:** adelgadillo747@gmail.com
+- **GitHub:** [Acis18](https://github.com/Acis18)

@@ -37,3 +37,5 @@ outputs/*.html
 .DS_Store
 Thumbs.db
 __pycache__/
+/.quarto/
+**/*.quarto_ipynb
