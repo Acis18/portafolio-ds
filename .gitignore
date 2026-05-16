@@ -16,8 +16,7 @@ data/processed/*
 # R
 .Rhistory
 .RData
-.Rproj.user
-*.Rproj
+.Rproj.user/
 
 # renv — la librería no se versiona, solo el lockfile
 renv/library/
