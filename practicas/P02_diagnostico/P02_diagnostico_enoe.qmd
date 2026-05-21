@@ -2,6 +2,12 @@
 title: "Diagnóstico de calidad — ENOE 2024"
 author: "Angel Acis Delgadillo Ramos"
 date: today
+format:
+  html:
+    toc: true
+    code-fold: true
+    code-tools: true
+lang: es
 ---
 
 ## Objetivo
@@ -21,9 +27,20 @@ El archivo `ENOE_SDEMT124.dbf` contiene el cuestionario sociodemográfico
 de la ENOE 2024 Trimestre 1. Cubre a la población de 15 años y más a nivel
 nacional con representatividad por entidad federativa.
 
+La ENOE es la principal fuente de información sobre el mercado laboral
+mexicano. Antes de calcular cualquier indicador — tasas de ocupación,
+ingresos, informalidad — es necesario verificar que el archivo no presenta
+problemas de integridad que puedan comprometer los resultados. Este paso
+es estándar en cualquier análisis con microdatos oficiales.
+
 ## Desarrollo
 
 ### Lectura y limpieza inicial
+
+El primer paso es cargar el archivo y estandarizar los nombres de columnas.
+La función `clean_names()` convierte todos los nombres a `snake_case` minúsculas,
+eliminando espacios, caracteres especiales y mayúsculas. Esto evita errores
+al referenciar variables y garantiza consistencia a lo largo del análisis.
 
 ```{r}
 #| label: lectura
@@ -42,6 +59,10 @@ cat("Columnas:", ncol(enoe), "\n")
 
 ### Dimensiones y estructura
 
+Según la documentación del INEGI, la muestra nacional de la ENOE debe
+contener entre 300,000 y 500,000 registros por trimestre. Un archivo fuera
+de ese rango indicaría una descarga incompleta o un archivo incorrecto.
+
 ```{r}
 #| label: dimensiones
 stopifnot(nrow(enoe) >= 300000 & nrow(enoe) <= 500000)
@@ -50,7 +71,14 @@ cat("QA Dimensiones: PASADO\n")
 
 ### Completitud
 
-Variables con valores faltantes en el archivo:
+La completitud mide qué proporción de valores están presentes en cada
+variable. No todos los valores faltantes son errores: en encuestas de
+hogares, muchas preguntas solo aplican a subgrupos específicos de la
+población (ocupados, personas con estudios superiores, etc.), por lo que
+un alto porcentaje de `NA` puede ser esperado y válido.
+
+El objetivo aquí es identificar qué variables tienen valores faltantes
+y documentarlo, no necesariamente corregirlo.
 
 ```{r}
 #| label: completitud
@@ -61,9 +89,13 @@ enoe |>
 
 ### Variables clave — rangos y NAs
 
-Las variables de interés para el análisis del mercado laboral son:
+Para el análisis del mercado laboral no se usan todas las 114 variables del
+archivo. Se seleccionan las variables sustantivas y se revisan sus rangos y
+valores faltantes de manera focalizada.
 
-- `clase1` — condición de actividad
+Las variables de interés son:
+
+- `clase1` — condición de actividad (ocupado, desocupado, inactivo)
 - `dur_est` — duración de estudios
 - `ingocup` — ingreso mensual de ocupados
 - `eda` — edad
@@ -83,8 +115,10 @@ enoe |>
   skimr::skim()
 ```
 
-La variable `eda` se importa como factor. Se convierte a numérico para
-permitir operaciones aritméticas:
+La variable `eda` se importa como factor desde el archivo `.dbf`. Se
+convierte a numérico para permitir filtros y operaciones aritméticas en
+análisis posteriores. Este es un problema común al leer microdatos INEGI
+con `foreign::read.dbf()`.
 
 ```{r}
 #| label: conversion-eda
@@ -97,11 +131,15 @@ range(enoe$eda, na.rm = TRUE)
 
 > **Regla general para microdatos INEGI:** el valor `99` en variables
 > demográficas siempre es código de no respuesta, nunca un valor real.
+> Debe filtrarse antes de calcular cualquier estadística.
 
 ### Consistencia lógica
 
-Una persona clasificada como ocupada (`clase1 == 1`) de 15 años o más
-debería tener horas trabajadas registradas. Se cuantifican las excepciones:
+La consistencia lógica verifica que las relaciones entre variables sean
+coherentes según las definiciones conceptuales de la encuesta. Una persona
+clasificada como ocupada (`clase1 == 1`) debería tener horas trabajadas
+registradas (`hrsocup > 0`). Los registros que incumplen esta condición
+pueden indicar errores de captura o casos especiales documentados.
 
 ```{r}
 #| label: consistencia
@@ -122,6 +160,11 @@ y no se consideran errores de captura.
 
 ### Distribución de variables categóricas
 
+Como paso final del diagnóstico se revisa la distribución de las variables
+categóricas principales. El objetivo es detectar categorías con frecuencias
+inusualmente bajas o códigos fuera del rango válido que pudieran pasar
+desapercibidos en un resumen de completitud.
+
 ```{r}
 #| label: frecuencias
 enoe |> dplyr::count(sex) |> dplyr::mutate(pct = n / sum(n) * 100)
@@ -130,6 +173,11 @@ enoe |> dplyr::count(rama) |> dplyr::arrange(desc(n))
 ```
 
 ## QA y validación
+
+Las siguientes validaciones resumen las condiciones que el archivo debe
+cumplir para ser considerado apto para análisis. Cada `stopifnot()` lanza
+un error si la condición no se cumple, garantizando que ningún análisis
+posterior continúe sobre un archivo defectuoso.
 
 ```{r}
 #| label: qa-final

@@ -1,73 +1,179 @@
 ---
-title: "Portafolio de Ciencia de Datos"
-subtitle: "25 proyectos aplicados con microdatos del INEGI"
-author: "Angel Acis Delgadillo Ramos"
+title: "Angel Acis Delgadillo Ramos"
+subtitle: "Matemático · Ciencia de Datos aplicada a microdatos oficiales del INEGI"
 date: today
+format:
+  html:
+    toc: false
+    page-layout: full
+    theme: cosmo
 ---
 
-## Sobre este portafolio
+```{=html}
+<style>
+.lead {
+  font-size: 1.1rem;
+  color: #444;
+  max-width: 820px;
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+}
+.card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: box-shadow 0.2s;
+}
+.card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+.card h3 { font-size: 1rem; margin-bottom: 0.6rem; }
+.card p  { font-size: 0.9rem; color: #555; margin-bottom: 0.8rem; }
+.badge {
+  display: inline-block;
+  background: #f0f4f8;
+  border: 1px solid #d0d7de;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  padding: 2px 7px;
+  margin: 2px 2px 6px 0;
+  font-family: monospace;
+  color: #333;
+}
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 1.5rem;
+}
+.stack-block { background: #f8f9fa; border-radius: 6px; padding: 1rem 1.25rem; }
+.stack-block h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 0.5rem; }
+.contact-row { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
+.contact-row a {
+  color: #333;
+  text-decoration: none;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 1px;
+}
+.contact-row a:hover { border-color: #333; }
+hr.section { border: none; border-top: 1px solid #e0e0e0; margin: 2rem 0; }
+</style>
+```
 
-Científico de datos con formación en Matemáticas y especialización en análisis
-estadístico de encuestas de hogares a gran escala. Este portafolio concentra
-25 proyectos aplicados desarrollados con microdatos oficiales del INEGI,
-cubriendo desde estadística descriptiva hasta estimación en áreas pequeñas
-a nivel municipal con datos censales.
+::: {.lead}
+Matemático con experiencia en análisis de datos ecológicos y educativos, en proceso de
+especialización en ciencia de datos aplicada a microdatos oficiales del INEGI.
+Construyo pipelines de análisis reproducibles en R con control de versiones profesional.
+Este portafolio documenta mis proyectos y crece de manera continua.
+:::
 
-Todos los proyectos siguen estándares de reproducibilidad completa, diseño
-muestral correcto y calidad de publicación oficial.
-
-## Proyectos destacados
-
-- Estimación de pobreza a nivel municipal combinando el Censo 2020 y la
-  ENIGH 2022 mediante modelos de área pequeña (Fay-Herriot) y XGBoost
-- Dashboard interactivo del mercado laboral mexicano con datos ENOE,
-  desplegado públicamente en Shiny
-- Paquete R documentado `{inegitools}` con funciones para procesamiento
-  reproducible de encuestas INEGI
-- Modelos predictivos de pobreza de ingresos y percepción de inseguridad
-  con Random Forest y XGBoost sobre microdatos ENIGH y ENVIPE
-- Análisis de panel longitudinal del efecto del salario mínimo sobre la
-  informalidad laboral en México 2023–2024
+<hr class="section">
 
 ## Proyectos
 
-### Mercado laboral
+```{=html}
+<div class="card-grid">
 
-Análisis del mercado laboral mexicano usando microdatos de la ENOE 2023–2024.
-Cubre estadística descriptiva, inferencia bajo diseño muestral complejo,
-modelos de regresión y series de tiempo.
+  <div class="card">
+    <h3>P01 · Ambiente Reproducible</h3>
+    <p>Configuración de entorno profesional con control de dependencias,
+    estructura estándar de proyecto y publicación en GitHub Pages.</p>
+    <span class="badge">renv</span>
+    <span class="badge">here</span>
+    <span class="badge">Git</span>
+    <span class="badge">GitHub Pages</span><br>
+    <a href="practicas/P01_ambiente/P01_ambiente.qmd">Ver proyecto →</a>
+  </div>
 
-- [Diagnóstico de calidad — ENOE 2024](practicas/P02_diagnostico/P02_diagnostico_enoe.qmd)
-- [Perfil del mercado laboral mexicano 2024](practicas/P03_descriptiva/P03_descriptiva_enoe.qmd)
+  <div class="card">
+    <h3>P02 · Diagnóstico de Calidad ENOE</h3>
+    <p>Auditoría de ~400,000 registros de la ENOE 2024-T1: rangos,
+    consistencia lógica entre variables y tasa de valores faltantes por columna.</p>
+    <span class="badge">haven</span>
+    <span class="badge">janitor</span>
+    <span class="badge">skimr</span>
+    <span class="badge">QA estadístico</span><br>
+    <a href="practicas/P02_diagnostico/P02_diagnostico_enoe.qmd">Ver proyecto →</a>
+  </div>
 
-### Pobreza y bienestar
+  <div class="card">
+    <h3>P03 · Perfil del Mercado Laboral</h3>
+    <p>Tres visualizaciones publicación-ready del mercado laboral mexicano 2024:
+    distribución de ingresos, informalidad por sector y pirámide edad-sexo.</p>
+    <span class="badge">ggplot2</span>
+    <span class="badge">scales</span>
+    <span class="badge">colorspace</span><br>
+    <a href="practicas/P03_descriptiva/P03_descriptiva_enoe.qmd">Ver proyecto →</a>
+  </div>
 
-Estimación de indicadores de bienestar económico con microdatos de la ENIGH
-y el Censo 2020. Incluye el proyecto de estimación en áreas pequeñas a nivel
-municipal.
+</div>
+```
 
-### Seguridad pública
-
-Análisis de percepción de inseguridad con microdatos de la ENVIPE 2023.
-Modelos predictivos con XGBoost e interpretabilidad con valores SHAP.
-
-### Modelos predictivos
-
-Pipelines completos de machine learning con tidymodels sobre microdatos
-del INEGI. Random Forest, XGBoost, series de tiempo y validación rigurosa.
+<hr class="section">
 
 ## Stack tecnológico
 
-- **Lenguaje:** R 4.6+
-- **Diseño muestral:** survey, srvyr
-- **Machine learning:** tidymodels, xgboost, ranger
-- **Series de tiempo:** fable, tsibble
-- **Visualización:** ggplot2, leaflet, Shiny
-- **Reportes:** Quarto, gt, kableExtra
-- **Reproducibilidad:** renv, here, testthat
-- **Control de versiones:** Git + GitHub Actions
+```{=html}
+<div class="stack-grid">
+  <div class="stack-block">
+    <h4>Lenguaje y entorno</h4>
+    <span class="badge">R 4.3+</span>
+    <span class="badge">RStudio</span>
+    <span class="badge">Quarto</span>
+    <span class="badge">Git</span>
+    <span class="badge">GitHub</span>
+  </div>
+  <div class="stack-block">
+    <h4>Manipulación de datos</h4>
+    <span class="badge">dplyr</span>
+    <span class="badge">tidyr</span>
+    <span class="badge">readr</span>
+    <span class="badge">purrr</span>
+    <span class="badge">haven</span>
+    <span class="badge">janitor</span>
+    <span class="badge">skimr</span>
+  </div>
+  <div class="stack-block">
+    <h4>Visualización</h4>
+    <span class="badge">ggplot2</span>
+    <span class="badge">scales</span>
+    <span class="badge">colorspace</span>
+  </div>
+  <div class="stack-block">
+    <h4>Reproducibilidad</h4>
+    <span class="badge">renv</span>
+    <span class="badge">here</span>
+    <span class="badge">testthat</span>
+  </div>
+</div>
+```
+
+<hr class="section">
+
+## Datos
+
+Todos los proyectos utilizan microdatos oficiales del INEGI. Los archivos
+originales no se incluyen en el repositorio por su volumen; cada proyecto
+documenta la fuente exacta, URL de descarga y fecha de adquisición.
+
+| Encuesta | Cobertura | Uso actual |
+|----------|-----------|------------|
+| ENOE 2024-T1 | Nacional trimestral | Diagnóstico de calidad, mercado laboral |
+
+<hr class="section">
 
 ## Contacto
 
-- **Email:** adelgadillo747@gmail.com
-- **GitHub:** [Acis18](https://github.com/Acis18)
+```{=html}
+<div class="contact-row">
+  <a href="mailto:adelgadillo747@gmail.com">✉ adelgadillo747@gmail.com</a>
+  <a href="https://github.com/Acis18" target="_blank">⌥ github.com/Acis18</a>
+  <a href="https://acis18.github.io/portafolio-ds" target="_blank">◈ acis18.github.io/portafolio-ds</a>
+  <a href="https://www.linkedin.com/in/angel-acis-delgadillo-ramos-408565276/" target="_blank">in linkedin.com/in/angel-acis</a>
+</div>
+```
