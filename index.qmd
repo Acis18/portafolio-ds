@@ -6,7 +6,7 @@ format:
   html:
     toc: false
     page-layout: full
-    theme: cosmo
+    theme: litera
 ---
 
 ```{=html}
@@ -108,7 +108,7 @@ Este portafolio documenta mis proyectos y crece de manera continua.
     <span class="badge">ggplot2</span>
     <span class="badge">scales</span>
     <span class="badge">colorspace</span><br>
-    <a href="practicas/P03_descriptiva/P03_descriptiva_enoe.qmd">Ver proyecto →</a>
+    <a href="practicas/P03_descriptiva/P03_Perfil_del_mercado_laboral_mexicano_2024.qmd">Ver proyecto →</a>
   </div>
 
 </div>

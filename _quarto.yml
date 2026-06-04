@@ -23,6 +23,9 @@ website:
       - section: "Mercado laboral"
         contents:
           - practicas/P02_diagnostico/P02_diagnostico_enoe.qmd
+      - section: "Descripción del mercado laboral"
+        contents:
+          - practicas/P03_descriptiva/P03_Perfil_del_mercado_laboral_mexicano_2024.qmd
 
 format:
   html:

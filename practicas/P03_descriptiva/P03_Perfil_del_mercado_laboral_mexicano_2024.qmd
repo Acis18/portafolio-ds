@@ -1,0 +1,304 @@
+---
+title: "P03 · Perfil del mercado laboral mexicano 2024"
+date: today
+author: Angel Acis Delgadillo Ramos
+---
+
+```{r}
+#| label: setup
+#| include: false
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(here)
+library(scales)
+library(colorspace)
+library(ggthemes)
+library(foreign)
+library(janitor)
+library(kableExtra)
+```
+
+```{r}
+#| label: carga-datos
+#| message: false
+
+enoe <- read.dbf(here("data", "raw", "ENOE_SDEMT124.dbf")) |>
+  clean_names()
+```
+
+## Objetivo
+
+Este reporte tiene como objetivo describir el mercado laboral mexicano usando los datos proporcionados por La Encuesta Nacional de Ocupación y Empleo (ENOE) emitida por la INEGI mediante 3 gráficas y 8 indicadores que medirán la distribución del ingreso mensual del asalariado, tasa de informalidad por sector económico y la edad y sexo de la población ocupada derivando así en información que le será de utilidad a aquellas instituciones que intervienen en el mercado laboral.
+
+## Datos
+
+```{r}
+#| label: filtro-asalariados
+
+asalariados <- enoe |>
+  filter(clase1 == 1, ingocup > 0) |>
+  mutate(ingocup = as.numeric(ingocup))
+```
+
+Los datos provienen del archivo ENOE_SDEMT124.dbf correspondientes al primer trimestre del año 2024. Este contiene datos de `r format(nrow(enoe), big.mark = ",")` personas encuestadas del cual solo se consideran los `r format(nrow(asalariados), big.mark = ",")`  ocupados cuyo ingreso mensual sea positivo.
+
+
+
+## Desarrollo 
+
+### Distribución del ingreso laboral mensual.
+
+Este primer gráfico muestra un histograma de la distribución del ingreso de las personas ocupadas con ingreso positivo evidenciando el panorama correspondiente al primer trimestre de 2024, periodo en el que entró en vigor un aumento del 20% al salario mínimo. Este proporciona información que es de utilidad para que las instituciones correspondientes tomen decisiones sobre posibles ajustes al salario mínimo.
+
+```{r}
+#| label: grafica-distribucion-ingresos
+#| fig-cap: "Distribución del ingreso laboral de trabajadores asalariados. Fuente: ENOE 2024-T1, INEGI."
+#| fig-width: 8
+#| fig-height: 5
+
+p99 <- quantile(asalariados$ingocup, 0.99)
+mediana <- median(asalariados$ingocup)
+media <- mean(asalariados$ingocup)
+
+asalariados |>
+  filter(ingocup <= p99) |>
+  ggplot(aes(x = ingocup)) +
+  geom_histogram(bins = 50, fill = "#00779B", color = NA, alpha = 0.85) +
+  geom_vline(aes(xintercept = mediana, linetype = "Mediana"),
+             color = "#D7191C", linewidth = 0.8) +
+  geom_vline(aes(xintercept = media, linetype = "Media"),
+             color = "#1A1A1A", linewidth = 0.8) +
+  scale_x_continuous(labels = label_comma(prefix = "$")) +
+  scale_linetype_manual(values = c("Mediana" = "solid", "Media" = "dashed")) +
+  labs(
+    title = "Distribución del ingreso laboral mensual",
+    subtitle = paste0("Trabajadores asalariados con ingreso positivo. Truncado en percentil 99 ($",
+                      format(round(p99), big.mark = ","), ")"),
+    x = "Ingreso mensual (pesos)",
+    y = "Frecuencia",
+    linetype = NULL,
+    caption = "Fuente: ENOE 2024-T1, INEGI. Elaboración propia."
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    legend.position = "top",
+    plot.caption = element_text(size = 9, color = "grey50")
+  )
+```
+
+Un `r round(sum(asalariados$ingocup < 7467.90) / nrow(asalariados) * 100, 1)`% de la población gana menos de 7467.90 valor correspondiente al salario mínimo mensual de 2024. Esta distribución sesgada a la derecha se extiende hacia algunos ingresos extremos llevando la media de ingresos mensuales a `r round(media, 1)` siendo mayor a la mediana de los datos. Sin embargo el trabajador típico, con una mediana de $8,000, gana por encima del salario mínimo mensual de $7,467.90.
+
+### Tasa de informalidad por sector.
+
+La informalidad es un problema relevante en México que priva a los trabajadores de las prestaciones de ley que deberían de tener por derecho. Esta gráfica muestra las tasas de informalidad de los distintos sectores económicos ordenadas de mayor a menor. Conocer esta distribución permite a las autoridades correspondientes enfocarse en aquellos sectores donde la informalidad es mayor y crear planes para intentar disminuirla. 
+
+```{r}
+#| label: grafica-informalidad
+#| fig-cap: "Tasa de informalidad por sector. Fuente: ENOE 2024-T1, INEGI."
+#| fig-width: 8
+#| fig-height: 5
+
+
+informalidad <- asalariados |>
+  filter(rama != 7 & rama != 6) |>
+  group_by(rama) |>
+  summarise(
+    total = n(),
+    informales = sum(emp_ppal == 1),
+    tasa_informalidad = informales / total * 100
+  )
+
+ggplot(informalidad,
+       aes(
+         y = reorder(rama, tasa_informalidad),
+         x = tasa_informalidad
+       )) +
+  geom_col(fill = "#00779B") + 
+  geom_text(
+    aes(label = paste0(round(tasa_informalidad, 1), "%")),
+    position = position_dodge(width = 0.9),
+    hjust = 1.2,
+    size = 4,
+    color = "black"
+  ) +
+  scale_y_discrete(
+    labels = c(
+      "1" = "Agropecuario",
+      "2" = "Construcción",
+      "3" = "Industria Manufacturera",
+      "4" = "Comercio",
+      "5" = "Servicios",
+      "6" = "otros",
+      "7" = "No Especificados"
+    )
+  ) +
+  labs(
+    title = "Tasas de informalidad por sector económico",
+    x = "Tasa de informalidad",
+    y = "Sector económico",
+    fill = NULL,
+    caption = "Fuente: ENOE 2024-T1, INEGI. Elaboración propia."
+  ) +
+  scale_x_continuous(
+    limits = c(0,100),
+    labels = function(x) paste0(x, "%")
+  ) +
+  theme_minimal(base_size = 13) +
+  theme( plot.caption = element_text(size = 9, color = "grey50"))
+
+
+```
+El gráfico deja en claro que el sector con mayor tasa de informalidad es el agropecuario, esto puede deberse a que muchas veces las ocupaciones en este sector están manejadas por empresas locales pequeñas o por las mismas familias dueñas de cultivos o terrenos. Por otro lado, el sector con menor informalidad es el de servicios, muchas de estas ocupaciones le pertenecen a empresas grandes que se ubican en ciudades o zonas mas urbanizadas haciéndolo mas fácil de regular y de tener un control. Esto para la política laboral implica que existe un cierto descuido por los sectores económicos que no son pertenecientes a empresas grandes o que no están en zonas urbanas.
+
+### Pirámide poblacional de edad y sexo
+
+Esta gráfica muestra la distribución de los asalariados por edad y sexo en el primer trimestre del año 2024. Conocer la estructura demográfica de la población asalariada permite a las autoridades correspondientes tomar decisiones orientadas a posibles regulaciones en las condiciones de trabajo y que estas sean dignas para la mayoría de la población.
+
+```{r}
+
+grupos <- c(15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,97)
+etiquetas = c("15-19","20-24","25-29","30-34","35-39","40-44","45-49","50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89","90-96")
+
+edades_gr <- asalariados |>
+  select(eda, sex) |>
+  mutate(eda = as.numeric(eda)) |>
+  filter(eda >= 15 & eda < 98) |>
+  mutate(
+    grupos_edad = cut(
+      eda,
+      breaks = grupos,
+      labels = etiquetas,
+      right = FALSE
+    )) |>
+  filter(!is.na(grupos_edad)) |>
+  group_by(grupos_edad, sex) |>
+  summarise(
+    poblacion = n(),
+    .groups = "drop"
+  ) |>
+  mutate(
+    poblacion = ifelse(sex == 1, - poblacion, poblacion)
+  )
+  
+ggplot(edades_gr, aes(x = poblacion, y = grupos_edad, fill = factor(sex))) +
+  geom_col() +
+    scale_fill_manual(
+      values = c("#00779B","#6E7E86"),
+      labels = c("Hombres", "Mujeres")
+  ) +
+  labs(
+    title = "Distribución de asalariados por edad y sexo 2024 T1",
+    x = "Población",
+    y = "Grupo de edad",
+    fill = "Sexo",
+    caption = "Fuente: ENOE 2024-T1, INEGI. Elaboración propia."
+  ) +
+  scale_x_continuous(
+  labels = \(x) scales::comma(abs(x))
+) +
+  theme_minimal(base_size = 13) +
+  theme( plot.caption = element_text(size = 9, color = "grey50"))
+
+```
+
+En ambos sexos la mayoría de los asalariados se concentran entre los 25 y los 59 años, sin embargo en las categorías de edades jóvenes hay una notable inclinación en la distribución hacia la población masculina implicando que los hombres comienzan a trabajar en una edad mas temprana que las mujeres. Lo anterior indica la predominancia del sexo masculino en edades mas tempranas.
+
+### Tabla de 8 indicadores
+
+```{r}
+tasa_ocupacion <- enoe |>
+  filter(clase2 %in% c(1,2)) |>
+  summarise(
+  ocupados = sum(clase2 == 1),
+  pea =n(),
+  tasa = ocupados / pea * 100
+  ) |>
+  pull(tasa)
+
+tasa_desocupacion <- enoe |>
+  filter(clase2 %in% c(1,2)) |>
+  summarise(
+    desocupados = sum(clase2 == 2),
+    pea = n(),
+    tasa = desocupados / pea *100
+  ) |>
+  pull(tasa)
+
+tasa_informalidad <- asalariados |>
+  filter(emp_ppal %in% c(1,2)) |>
+  summarise(
+    informales = sum(emp_ppal == 1),
+    total = n(),
+    tasa = informales / total * 100
+  ) |>
+  pull(tasa)
+
+ingreso_mediano <- asalariados |>
+  summarise(
+    mediana = median(ingocup, na.rm = TRUE)
+  ) |>
+  pull(mediana)
+  
+tiempo_parcial <- asalariados |>
+  summarise(
+    tparcial = sum(dur9c %in% c(3,4), na.rm = TRUE),
+    total = n(),
+    porcentaje = tparcial /total * 100
+  ) |>
+  pull(porcentaje)
+
+subocupados <- asalariados |>
+  summarise(
+    suboc = sum(sub_o == 1, na.rm = TRUE),
+    total = n(),
+    tasa = suboc / total * 100
+  ) |>
+  pull(tasa)
+
+promedio_horas <- asalariados |>
+  summarise(
+   promedio = mean(hrsocup, na.rm = TRUE)
+  ) |>
+  pull(promedio)
+
+tiene_prestaciones <- asalariados |>
+  summarize(
+    prestaciones = sum(pre_asa == 1, na.rm = TRUE),
+    total = n(),
+    porcentaje = prestaciones/total*100
+  ) |>
+  pull(porcentaje)
+```
+
+```{r}
+variables <- c(tasa_ocupacion,tasa_desocupacion,tasa_informalidad,ingreso_mediano,tiempo_parcial,subocupados,promedio_horas,tiene_prestaciones)
+indicadores <- tibble(
+  indicador = c("Tasa de ocupación", "Tasa de desocupación", "Tasa de informalidad", "Ingreso mediano", "Porcentaje de tiempo parcial", "Porcentaje de subocupados","Promedio de horas trabajadas","Porcentaje con prestaciones"),
+  valor = c(round(variables, 2)),
+  unidad = c("%", "%", "%", " pesos", "%", "%", " horas", "%")
+)
+
+indicadores |>
+  mutate(valor = case_when(
+  indicador == "Ingreso mediano" ~ paste0(format(round(valor, 0), big.mark = ","), unidad),
+  TRUE ~ paste0(valor, unidad)
+))|>
+  select(-unidad) |>
+  kable(
+    col.names = c("Indicador", "Valor"),
+    caption = "Indicadores del mercado laboral. ENOE 2024-T1, INEGI."
+  ) |>
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed", "bordered"),
+    full_width = FALSE
+  ) |>
+  column_spec(1, bold = TRUE, width = "60%") |>
+    row_spec(0, bold = TRUE, background = "#00779B", color = "white")
+```
+
+
+
+
+
