@@ -157,6 +157,7 @@ El gráfico deja en claro que el sector con mayor tasa de informalidad es el agr
 Esta gráfica muestra la distribución de los asalariados por edad y sexo en el primer trimestre del año 2024. Conocer la estructura demográfica de la población asalariada permite a las autoridades correspondientes tomar decisiones orientadas a posibles regulaciones en las condiciones de trabajo y que estas sean dignas para la mayoría de la población.
 
 ```{r}
+#| label: grafica-piramide
 
 grupos <- c(15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,97)
 etiquetas = c("15-19","20-24","25-29","30-34","35-39","40-44","45-49","50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89","90-96")
@@ -203,9 +204,11 @@ ggplot(edades_gr, aes(x = poblacion, y = grupos_edad, fill = factor(sex))) +
 
 ```
 
-En ambos sexos la mayoría de los asalariados se concentran entre los 25 y los 59 años, sin embargo en las categorías de edades jóvenes hay una notable inclinación en la distribución hacia la población masculina implicando que los hombres comienzan a trabajar en una edad mas temprana que las mujeres. Lo anterior indica la predominancia del sexo masculino en edades mas tempranas.
+En ambos sexos la mayoría de los asalariados se concentran entre los 25 y los 59 años, sin embargo en las categorías de edades jóvenes y más avanzadas hay una notable inclinación en la distribución hacia la población masculina implicando que los hombres comienzan a trabajar en una edad mas temprana y continúan laborando en edades mas avanzadas en comparación a las mujeres. Lo anterior indica la predominancia del sexo masculino en el mercado laboral en su juventud y su vejez.
 
 ### Tabla de 8 indicadores
+
+La siguiente tabla proporciona el panorama del mercado laboral del primer trimestre de 2024 a través de indicadores que describen en un solo valor el estado de esa dimensión sin necesidad de interpretar gráficos complejos. Juntos estos 8 indicadores dan un diagnóstico completo desde 4 ángulos distintos: cantidad de empleo, calidad del empleo, remuneración y condiciones de trabajo.   
 
 ```{r}
 tasa_ocupacion <- enoe |>
@@ -297,8 +300,59 @@ indicadores |>
   column_spec(1, bold = TRUE, width = "60%") |>
     row_spec(0, bold = TRUE, background = "#00779B", color = "white")
 ```
+En el primer trimestre del año 2024 la tasa de ocupación es de `r round(tasa_ocupacion, 2)`% sin embargo, un `r round(100 - tiene_prestaciones , 2)`% de la población carece de las prestaciones que por ley deberían tener. Así mismo, un `r round(tasa_informalidad, 2)`% de los asalariados trabajan en empleos informales privándose de dichas prestaciones. Esto implica que aunque la mayoría de la población se encuentre trabajando una gran parte de esta no cuenta con prestaciones de ley.
 
+### Quality Assurance
 
+```{r}
+stopifnot(all(asalariados$ingocup >= 0, na.rm = TRUE))
 
+p99_5 <- quantile(asalariados$ingocup, 0.995)
+n_outliers <- sum(asalariados$ingocup > p99_5)
 
+```
+Registros sobre el percentil 99.5: `r n_outliers` (`r round(n_outliers/nrow(asalariados)*100,2)`% del total).
+
+Los ejes de las tres gráficas están en español y sin abreviaturas sin 
+explicar. Verificado manualmente.
+
+La paleta de colores está verificada para el uso seguro para daltonismo.
+
+El render se ejecuta sin problemas asegurando su reproducibilidad.
+
+### Concluciones
+
+La mayoría de los trabajadores encuestados se enfrentan a una situación complicada sobreviviendo con sueldos que apenas superan el salario mínimo establecido por la CONASAMI. Adicionalmente la mitad de las personas asalariadas se encuentran en empleos informales que carecen de una regulación por parte de las autoridades privando de derechos y prestaciones a sus trabajadores. Dicha informalidad se encuentra mayormente concentrada en el sector agropecuario. Los hombres predominan en el mercado laboral comenzando a trabajar desde edades mas tempranas y dejando de trabajar en edades mas avanzadas comparado con las mujeres. Todo esto deja en evidencia la falta de regulación de los ambientes laborales y de sueldos dignos para la población ya que estos dos factores dan como resultado trabajos sin prestaciones y mal pagados, siendo una señal de alarma para las instituciones correspondientes.
+
+### Nota metodologica
+
+Los datos fueron obtenidos de La encuesta nacional de ocupación y empleo (ENOE) hecha por el INEGI en el primer trimestre de 2024. 
+
+Las variables clave que permitieron este análisis fueron las siguientes:
+
+Para filtros y subconjuntos
+
+- `clase1`: Identifica la población ocupada (valor = 1)
+- `clase2`: identifica ocupados y desocupados para calcular tasas sobre la PEA
+
+Para las graficas
+
+- `ingocup`: ingreso mensual de la ocupación principal
+- `rama`: sector económico (1 al 5, excluyendo 6 y 7)
+- `emp_ppal`:  condición de formalidad o informalidad del empleo
+- `eda`: edad del encuestado
+- `sex`: sexo del encuestado
+
+Para los indicadores
+
+- `dur9c`: duración de la jornada laboral
+- `sub_o`: condición de subocupación
+- `hrsocup`: horas trabajadas a la semana
+- `pre_asa`: acceso a prestaciones laborales
+
+Para los análisis se filtraron los datos sobre la población asalariada para evitar sesgos y errores en las tasas considerando a personas que no pertenece a nuestra población de interés.
+
+Al usar `ingocup > 0` excluye ocupados con ingreso cero o no especificado, lo que sesga la tasa hacia arriba. Un ocupado sin ingreso registrado podría ser informal
+
+Los indicadores presentados no incorporan el diseño muestral complejo de la ENOE, por lo que los errores estándar pueden estar subestimados.
 
